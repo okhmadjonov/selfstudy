@@ -9,16 +9,17 @@ from persistence.database.models.category_model import CategoryModel
 
 class GetAllCategoriesHandler:
     """
-    .NET'dagi `ProductCategoriesAllQueryHandler : IRequestHandler<ProductCategoriesAllQuery, ProductCategoriesAllVm>` ekvivalenti.
+    .NET'dagi `ProductCategoriesAllQueryHandler` ekvivalenti.
     """
 
     def __init__(self, context: IBBDbContext) -> None:
         self._context = context
 
     async def handle(self, request: GetAllCategoriesQuery) -> GetAllCategoriesVm:
-        stmt = select(CategoryModel)
+        # Faqat o'chirilmaganlarni olish (.Where(x => !x.IsDeleted))
+        stmt = select(CategoryModel).where(CategoryModel.is_deleted == False)
 
-        # Qidiruv bo'lsa (Search filter)
+        # Qidiruv bo'lsa
         if request.search:
             search_pattern = f"%{request.search}%"
             stmt = stmt.where(
@@ -33,4 +34,3 @@ class GetAllCategoriesHandler:
 
         items = [CategoryLookupDto.model_validate(c) for c in categories]
         return GetAllCategoriesVm(items=items)
-

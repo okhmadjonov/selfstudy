@@ -9,14 +9,18 @@ from persistence.database.models.category_model import CategoryModel
 
 class GetCategoryDetailsHandler:
     """
-    .NET'dagi `ProductCategoryDetailsQueryHandler : IRequestHandler<ProductCategoryDetailsQuery, ProductCategoryDetailsVm>` ekvivalenti.
+    .NET'dagi `ProductCategoryDetailsQueryHandler` ekvivalenti.
     """
 
     def __init__(self, context: IBBDbContext) -> None:
         self._context = context
 
     async def handle(self, request: GetCategoryDetailsQuery) -> CategoryDetailsVm:
-        stmt = select(CategoryModel).where(CategoryModel.id == request.id)
+        # Faqat o'chirilmaganini topish (.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted))
+        stmt = select(CategoryModel).where(
+            CategoryModel.id == request.id,
+            CategoryModel.is_deleted == False,
+        )
         result = await self._context.session.execute(stmt)
         entity = result.scalar_one_or_none()
 
@@ -24,4 +28,3 @@ class GetCategoryDetailsHandler:
             raise NotFoundException("Category", request.id)
 
         return CategoryDetailsVm.model_validate(entity)
-

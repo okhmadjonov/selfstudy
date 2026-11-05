@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy import select
 
 from application.exceptions import NotFoundException
@@ -8,21 +9,27 @@ from persistence.database.models.category_model import CategoryModel
 
 class DeleteCategoryHandler:
     """
-    .NET'dagi `DeleteProductCategoryCommandHandler : IRequestHandler<DeleteProductCategoryCommand>` ekvivalenti.
+    .NET'dagi `DeleteProductCategoryCommandHandler` ekvivalenti.
+    Soft Delete: bazadan o'chirib tashlamaydi, is_deleted=True qilib qo'yadi.
     """
 
     def __init__(self, context: IBBDbContext) -> None:
         self._context = context
 
     async def handle(self, request: DeleteCategoryCommand) -> None:
-        stmt = select(CategoryModel).where(CategoryModel.id == request.id)
+        # Faqat o'chirilmaganlarni topish
+        stmt = select(CategoryModel).where(
+            CategoryModel.id == request.id,
+            CategoryModel.is_deleted == False,
+        )
         result = await self._context.session.execute(stmt)
         entity = result.scalar_one_or_none()
 
         if entity is None:
             raise NotFoundException("Category", request.id)
 
-        # Bazadan o'chirish (yoki soft-delete)
-        await self._context.session.delete(entity)
-        await self._context.save_changes_async()
+        # Soft Delete qilish (.NET dagi: entity.IsDeleted = true)
+        entity.is_deleted = True
+        entity.updated_at = datetime.utcnow()
 
+        await self._context.save_changes_async()

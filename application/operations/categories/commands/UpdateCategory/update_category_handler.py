@@ -10,19 +10,22 @@ from persistence.database.models.category_model import CategoryModel
 
 class UpdateCategoryHandler:
     """
-    .NET'dagi `UpdateProductCategoryHandler : IRequestHandler<UpdateProductCategoryCommand, UpdateProductCategoryVm>` ekvivalenti.
+    .NET'dagi `UpdateProductCategoryHandler` ekvivalenti.
     """
 
     def __init__(self, context: IBBDbContext) -> None:
         self._context = context
 
     async def handle(self, request: UpdateCategoryCommand) -> UpdateCategoryVm:
-        # 1. Bazadan ID bo'yicha qidirish (FirstOrDefaultAsync)
-        stmt = select(CategoryModel).where(CategoryModel.id == request.id)
+        # 1. Bazadan ID bo'yicha va faqat o'chirilmaganini qidirish
+        stmt = select(CategoryModel).where(
+            CategoryModel.id == request.id,
+            CategoryModel.is_deleted == False,
+        )
         result = await self._context.session.execute(stmt)
         entity = result.scalar_one_or_none()
 
-        # 2. Agar topilmasa NotFoundException
+        # 2. Agar topilmasa yoki o'chirilgan bo'lsa NotFoundException
         if entity is None:
             raise NotFoundException("Category", request.id)
 
@@ -39,4 +42,3 @@ class UpdateCategoryHandler:
 
         # 5. ViewModel qaytarish
         return UpdateCategoryVm.model_validate(entity)
-

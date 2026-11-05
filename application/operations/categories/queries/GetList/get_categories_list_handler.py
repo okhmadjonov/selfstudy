@@ -11,16 +11,16 @@ from persistence.database.models.category_model import CategoryModel
 class GetCategoriesListHandler:
     """
     .NET'dagi `ProductCategoriesListQueryHandler` ekvivalenti.
-    Pagination (Skip/Take), Search va Order by bilan ishlaydi.
     """
 
     def __init__(self, context: IBBDbContext) -> None:
         self._context = context
 
     async def handle(self, request: GetCategoriesListQuery) -> CategoriesListVm:
-        stmt = select(CategoryModel)
+        # 1. Faqat o'chirilmaganlarni olish (.Where(x => !x.IsDeleted))
+        stmt = select(CategoryModel).where(CategoryModel.is_deleted == False)
 
-        # 1. Search filtri (nomi yoki tavsifida)
+        # 2. Qidiruv filtri
         if request.search:
             pattern = f"%{request.search}%"
             stmt = stmt.where(
@@ -30,18 +30,18 @@ class GetCategoriesListHandler:
                 )
             )
 
-        # 2. Total items hisoblash (CountAsync)
+        # 3. Total items hisoblash
         count_stmt = select(func.count()).select_from(stmt.subquery())
         total_items = await self._context.session.scalar(count_stmt) or 0
 
-        # 3. Saralash (OrderBy)
+        # 4. Saralash
         sort_col = getattr(CategoryModel, request.order_column, CategoryModel.created_at)
         if request.order_type.lower() == "desc":
             stmt = stmt.order_by(desc(sort_col))
         else:
             stmt = stmt.order_by(asc(sort_col))
 
-        # 4. Sahifalash (Skip(pi-1 * ps).Take(ps))
+        # 5. Sahifalash
         page_size = max(1, min(request.page_size, 100))
         page_index = max(1, request.page_index)
         offset = (page_index - 1) * page_size
@@ -61,4 +61,3 @@ class GetCategoriesListHandler:
             total_items=total_items,
             items=items,
         )
-
