@@ -1,7 +1,8 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware  
 from webapi.config import settings
 from webapi.controllers.v1.router import api_router
-from webapi.middlewares.error_handler import register_exception_handlers  # <-- 1. Import
+from webapi.middlewares.error_handler import register_exception_handlers
 
 
 def create_app() -> FastAPI:
@@ -10,10 +11,21 @@ def create_app() -> FastAPI:
         debug=settings.DEBUG,
     )
 
-    # 2. Global Exception Handler'ni ulash
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[
+            "http://localhost:3000",  
+            "http://localhost:5173",  
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:5173",
+        ],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
     register_exception_handlers(app)
 
-    # Controller'larni ro'yxatdan o'tkazish
     app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 
     return app
