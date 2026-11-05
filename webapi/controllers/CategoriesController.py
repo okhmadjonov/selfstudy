@@ -1,7 +1,7 @@
-from typing import Optional
+﻿from typing import Optional
 from fastapi import APIRouter, Depends, Query, status
 
-from application.interfaces.dbcontextinterface import IBBDbContext
+from application.interfaces.dbcontextinterface import ISSDbContext
 from application.operations.categories.commands.CreateCategory import (
     CreateCategoryCommand,
     CreateCategoryDto,
@@ -52,7 +52,7 @@ async def get_list(
     ps: int = Query(10, ge=1, le=100, alias="ps", description="Sahifa hajmi (PageSize)"),
     s: Optional[str] = Query("", alias="s", description="Qidiruv matni (Search)"),
     ot: str = Query("asc", alias="ot", pattern="^(asc|desc)$", description="Saralash tartibi (OrderType)"),
-    context: IBBDbContext = Depends(get_db_context),
+    context: ISSDbContext = Depends(get_db_context),
 ) -> CategoriesListVm:
     query = GetCategoriesListQuery(
         page_index=pi,
@@ -74,7 +74,7 @@ async def get_list(
 )
 async def get_all(
     s: Optional[str] = Query("", alias="s", description="Qidiruv matni"),
-    context: IBBDbContext = Depends(get_db_context),
+    context: ISSDbContext = Depends(get_db_context),
 ) -> GetAllCategoriesVm:
     query = GetAllCategoriesQuery(search=s)
     handler = GetAllCategoriesHandler(context=context)
@@ -91,7 +91,7 @@ async def get_all(
 )
 async def get_details(
     id: int,
-    context: IBBDbContext = Depends(get_db_context),
+    context: ISSDbContext = Depends(get_db_context),
 ) -> CategoryDetailsVm:
     query = GetCategoryDetailsQuery(id=id)
     handler = GetCategoryDetailsHandler(context=context)
@@ -108,7 +108,7 @@ async def get_details(
 )
 async def create(
     dto: CreateCategoryDto,
-    context: IBBDbContext = Depends(get_db_context),
+    context: ISSDbContext = Depends(get_db_context),
 ) -> CreateCategoryVm:
     command = CreateCategoryCommand.from_dto(dto)
     handler = CreateCategoryHandler(context=context)
@@ -126,7 +126,7 @@ async def create(
 async def update(
     id: int,
     dto: UpdateCategoryDto,
-    context: IBBDbContext = Depends(get_db_context),
+    context: ISSDbContext = Depends(get_db_context),
 ) -> UpdateCategoryVm:
     command = UpdateCategoryCommand.from_dto(id=id, dto=dto)
     handler = UpdateCategoryHandler(context=context)
@@ -142,8 +142,9 @@ async def update(
 )
 async def delete(
     id: int,
-    context: IBBDbContext = Depends(get_db_context),
+    context: ISSDbContext = Depends(get_db_context),
 ) -> None:
     command = DeleteCategoryCommand(id=id)
     handler = DeleteCategoryHandler(context=context)
     await handler.handle(command)
+

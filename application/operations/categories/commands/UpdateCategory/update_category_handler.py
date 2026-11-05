@@ -1,8 +1,8 @@
-from datetime import datetime
+﻿from datetime import datetime
 from sqlalchemy import select
 
 from application.exceptions import NotFoundException
-from application.interfaces.dbcontextinterface import IBBDbContext
+from application.interfaces.dbcontextinterface import ISSDbContext
 from application.operations.categories.commands.UpdateCategory.update_category_command import UpdateCategoryCommand
 from application.operations.categories.commands.UpdateCategory.update_category_vm import UpdateCategoryVm
 from persistence.database.models.category_model import CategoryModel
@@ -13,7 +13,7 @@ class UpdateCategoryHandler:
     .NET'dagi `UpdateProductCategoryHandler` ekvivalenti.
     """
 
-    def __init__(self, context: IBBDbContext) -> None:
+    def __init__(self, context: ISSDbContext) -> None:
         self._context = context
 
     async def handle(self, request: UpdateCategoryCommand) -> UpdateCategoryVm:
@@ -42,3 +42,4 @@ class UpdateCategoryHandler:
 
         # 5. ViewModel qaytarish
         return UpdateCategoryVm.model_validate(entity)
+

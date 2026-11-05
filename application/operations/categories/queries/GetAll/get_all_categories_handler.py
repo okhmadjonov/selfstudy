@@ -1,6 +1,6 @@
-from sqlalchemy import or_, select
+﻿from sqlalchemy import or_, select
 
-from application.interfaces.dbcontextinterface import IBBDbContext
+from application.interfaces.dbcontextinterface import ISSDbContext
 from application.operations.categories.queries.GetAll.get_all_categories_dto import CategoryLookupDto
 from application.operations.categories.queries.GetAll.get_all_categories_query import GetAllCategoriesQuery
 from application.operations.categories.queries.GetAll.get_all_categories_vm import GetAllCategoriesVm
@@ -12,7 +12,7 @@ class GetAllCategoriesHandler:
     .NET'dagi `ProductCategoriesAllQueryHandler` ekvivalenti.
     """
 
-    def __init__(self, context: IBBDbContext) -> None:
+    def __init__(self, context: ISSDbContext) -> None:
         self._context = context
 
     async def handle(self, request: GetAllCategoriesQuery) -> GetAllCategoriesVm:
@@ -34,3 +34,4 @@ class GetAllCategoriesHandler:
 
         items = [CategoryLookupDto.model_validate(c) for c in categories]
         return GetAllCategoriesVm(items=items)
+

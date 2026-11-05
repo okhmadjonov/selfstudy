@@ -2,11 +2,11 @@ from abc import ABC, abstractmethod
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-class IBBDbContext(ABC):
+class ISSDbContext(ABC):
     """
-    .NET'dagi `public interface IBBDbContext` ekvivalenti:
+    .NET'dagi `public interface ISSDbContext` ekvivalenti:
     
-    public interface IBBDbContext
+    public interface ISSDbContext
     {
         public DatabaseFacade Database { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
@@ -35,6 +35,3 @@ class IBBDbContext(ABC):
         """Xatolik yuz berganda o'zgarishlarni bekor qilish"""
         pass
 
-
-# Eski nom bilan ham mos bo'lishi uchun alias
-IAppDbContext = IBBDbContext

@@ -7,10 +7,9 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import DeclarativeBase
 
-from application.interfaces.dbcontextinterface import IBBDbContext
+from application.interfaces.dbcontextinterface import ISSDbContext
 from webapi.config import settings
 
-# 1. Asinxron Engine (xuddi DbContextOptionsBuilder.UseNpgsql(...) kabi)
 engine = create_async_engine(
     settings.database_url,
     echo=settings.DEBUG,
@@ -32,11 +31,11 @@ class Base(AsyncAttrs, DeclarativeBase):
     pass
 
 
-# 4. Haqiqiy BBDbContext klassi
-# .NET: public class BBDbContext : DbContext, IBBDbContext
-class BBDbContext(IBBDbContext):
+# 4. Haqiqiy SSDbContext klassi
+# .NET: public class SSDbContext : DbContext, ISSDbContext
+class SSDbContext(ISSDbContext):
     """
-    .NET'dagi `public class BBDbContext : DbContext, IBBDbContext` to'liq ekvivalenti.
+    .NET'dagi `public class SSDbContext : DbContext, ISSDbContext` to'liq ekvivalenti.
     """
 
     def __init__(self, session: AsyncSession) -> None:
@@ -55,14 +54,10 @@ class BBDbContext(IBBDbContext):
         await self._session.rollback()
 
 
-# Ikkala nom bilan ham mos bo'lishi uchun alias
-AppDbContext = BBDbContext
-
-
-# 5. Dependency Injection (xuddi builder.Services.AddScoped<IBBDbContext, BBDbContext>() kabi)
-async def get_db_context() -> AsyncGenerator[IBBDbContext, None]:
+# 5. Dependency Injection (xuddi builder.Services.AddScoped<ISSDbContext, SSDbContext>() kabi)
+async def get_db_context() -> AsyncGenerator[ISSDbContext, None]:
     async with AsyncSessionLocal() as session:
-        context = BBDbContext(session=session)
+        context = SSDbContext(session=session)
         try:
             yield context
         except Exception:

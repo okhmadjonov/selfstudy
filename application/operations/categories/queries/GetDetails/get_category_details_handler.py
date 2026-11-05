@@ -1,7 +1,7 @@
-from sqlalchemy import select
+﻿from sqlalchemy import select
 
 from application.exceptions import NotFoundException
-from application.interfaces.dbcontextinterface import IBBDbContext
+from application.interfaces.dbcontextinterface import ISSDbContext
 from application.operations.categories.queries.GetDetails.get_category_details_query import GetCategoryDetailsQuery
 from application.operations.categories.queries.GetDetails.get_category_details_vm import CategoryDetailsVm
 from persistence.database.models.category_model import CategoryModel
@@ -12,7 +12,7 @@ class GetCategoryDetailsHandler:
     .NET'dagi `ProductCategoryDetailsQueryHandler` ekvivalenti.
     """
 
-    def __init__(self, context: IBBDbContext) -> None:
+    def __init__(self, context: ISSDbContext) -> None:
         self._context = context
 
     async def handle(self, request: GetCategoryDetailsQuery) -> CategoryDetailsVm:
@@ -28,3 +28,4 @@ class GetCategoryDetailsHandler:
             raise NotFoundException("Category", request.id)
 
         return CategoryDetailsVm.model_validate(entity)
+

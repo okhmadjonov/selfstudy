@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from webapi.config import settings
 from webapi.controllers.v1.router import api_router
+from webapi.middlewares.error_handler import register_exception_handlers  # <-- 1. Import
 
 
 def create_app() -> FastAPI:
@@ -9,7 +10,10 @@ def create_app() -> FastAPI:
         debug=settings.DEBUG,
     )
 
-    # Controller'larni ro'yxatdan o'tkazish (app.MapControllers() kabi)
+    # 2. Global Exception Handler'ni ulash
+    register_exception_handlers(app)
+
+    # Controller'larni ro'yxatdan o'tkazish
     app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 
     return app

@@ -1,4 +1,4 @@
-from application.interfaces.dbcontextinterface import IBBDbContext
+﻿from application.interfaces.dbcontextinterface import ISSDbContext
 from application.operations.categories.commands.CreateCategory.create_category_command import CreateCategoryCommand
 from application.operations.categories.commands.CreateCategory.create_category_vm import CreateCategoryVm
 from persistence.database.models.category_model import CategoryModel
@@ -10,7 +10,7 @@ class CreateCategoryHandler:
     Biznes mantig'ini bajaruvchi klass.
     """
 
-    def __init__(self, context: IBBDbContext) -> None:
+    def __init__(self, context: ISSDbContext) -> None:
         self._context = context
 
     async def handle(self, request: CreateCategoryCommand) -> CreateCategoryVm:
@@ -32,4 +32,5 @@ class CreateCategoryHandler:
 
         # 5. ViewModel qaytarish (AutoMapper: _mapper.Map<CreateCategoryVm>(category))
         return CreateCategoryVm.model_validate(category)
+
 

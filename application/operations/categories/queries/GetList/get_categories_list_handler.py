@@ -1,7 +1,7 @@
-import math
+﻿import math
 from sqlalchemy import asc, desc, func, or_, select
 
-from application.interfaces.dbcontextinterface import IBBDbContext
+from application.interfaces.dbcontextinterface import ISSDbContext
 from application.operations.categories.queries.GetList.get_categories_list_dto import CategoryListItemDto
 from application.operations.categories.queries.GetList.get_categories_list_query import GetCategoriesListQuery
 from application.operations.categories.queries.GetList.get_categories_list_vm import CategoriesListVm
@@ -13,7 +13,7 @@ class GetCategoriesListHandler:
     .NET'dagi `ProductCategoriesListQueryHandler` ekvivalenti.
     """
 
-    def __init__(self, context: IBBDbContext) -> None:
+    def __init__(self, context: ISSDbContext) -> None:
         self._context = context
 
     async def handle(self, request: GetCategoriesListQuery) -> CategoriesListVm:
@@ -61,3 +61,4 @@ class GetCategoriesListHandler:
             total_items=total_items,
             items=items,
         )
+
